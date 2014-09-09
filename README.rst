@@ -1,7 +1,7 @@
 It accepts any string of hexadecimal characters and returns a string of words that uniquely maps to that hash.
 
 ::
-	>>> from hashed.words import dehash, enhash
+	>>> from hashed import dehash, enhash
 	>>> dehash("21046fd2f17ac0f30c88190393568045256866f2")
 	'cassareep irascibly upbrought scorched atheized bourtrees oloroso manful chobdar hornbook'
 	>>> enhash('disbowel obi magnetises famous oblivious divulgence thickened welders foiningly votresses')
