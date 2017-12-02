@@ -3,10 +3,13 @@ A module to create a friendly representation of an underlying hash object. Uses 
 
 wordlist is a UTF-16 encoded file with one string every bytes.
 
->>> dehash("21046fd2f17ac0f30c88190393568045256866f2")
-'cassareep irascibly upbrought scorched atheized bourtrees oloroso manful chobdar hornbook'
->>> enhash('disbowel obi magnetises famous oblivious divulgence thickened welders foiningly votresses')
-'3bc491b57f3a4d1a91da3daae16dfa0052aff75f'
+>>> testhash = '21046fd2f17ac0f30c88190393568045256866f2'
+>>> dehash(testhash)
+'cassata irately upbuild scorchers atheizing bouse olpe manfulness choc hornbooks'
+>>> enhash('cassata irately upbuild scorchers atheizing bouse olpe manfulness choc hornbooks')
+'21046fd2f17ac0f30c88190393568045256866f2'
+>>> testhash == enhash('cassata irately upbuild scorchers atheizing bouse olpe manfulness choc hornbooks')
+True
 """
 import inspect, os.path, gzip, json
 from mmap import mmap
@@ -43,9 +46,11 @@ def dehash(hash, address_size=4,line_size=15,character_size=2):
 	is the number of bytes per character.
 
 	>>> dehash("3bc491b57f3a4d1a91da3daae16dfa0052aff75f")
-	'disbowel obi magnetises famous oblivious divulgence thickened welders foiningly votresses'
+	'disbud obiing magnetite famousness oblong divulges thickening welding foins vouched'
 	>>> dehash("bff2cdc22f22b79fee98bfa3205a0b12912fabd0")
-	'scatology solen courtier retrofit unmasking scantling carjacks arrestors nunship puffball'
+	'scats solenettes courtiers retrofits unmasks scantlings carking arrests nuraghi puffer'
+    >>> dehash("00")
+    'aah'
 	"""
 	global __file, __mapped
 	words = []
@@ -64,7 +69,7 @@ def dehash(hash, address_size=4,line_size=15,character_size=2):
 	return " ".join(words)
 
 def get_at_address(line, line_size, character_size):
-	address = line_size * character_size * line-line_size*character_size
+	address = line_size * character_size * line #-line_size*character_size
 	word = __mapped[address:address+line_size*character_size]
 	return word.decode("UTF16").strip()	
 
@@ -73,29 +78,17 @@ def enhash(words, address_size=4):
 	Given a word string, containing only words in wordlist, return the hash that it comes from. This assumes that the supplied 
 	wordlist only contains "valid" words, off the wordlist list. It may enter an infinite loop otherwise. (I will fix that, probably)
 	>>> enhash('disbowel obi magnetises famous oblivious divulgence thickened welders foiningly votresses')
-	'3bc491b57f3a4d1a91da3daae16dfa0052aff75f'
+	'3bc391b47f394d1991d93da9e16cf9ff52aef75e'
 	>>> enhash('scatology solen courtier retrofit unmasking scantling carjacks arrestors nunship puffball')
-	'bff2cdc22f22b79fee98bfa3205a0b12912fabd0'
+	'bff1cdc12f21b79eee97bfa220590b11912eabcf'
 	"""
 	l = words.split(" ")
 	test = ""
 	hsh = ""
 	for word in l:
-		(bottom,top) = __index[word[:3]]
-		mid = (top - bottom) // 2 + bottom
+		(bottom,top) = __index[word]
 
-		while True:
-			test = get_at_address(mid, 15,2)
-			if test == word:
-				break
-			elif test < word:
-				bottom = mid
-				mid = (top - bottom) // 2 + bottom
-			elif test > word:
-				top = mid
-				mid = (top - bottom) // 2 + bottom
-
-		hsh += hex(mid)[2:].rjust(address_size, "0")
+		hsh += hex(bottom // 30)[2:].rjust(address_size, "0")
 	return hsh
 
 def get_index():
